@@ -3,8 +3,11 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use App\http\middleware\customMiddleware;
-use App\http\middleware\customauthMiddleware;
+use App\http\middleware\authCheck;
+use App\http\middleware\alreadyLoggedIn;
+use Illuminate\Session\Middleware\StartSession;
+use App\http\middleware\apiAuth;
+
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -14,8 +17,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->append(customMiddleware::class);
-        $middleware->append(customauthMiddleware::class);
+        $middleware->appendToGroup('web',
+
+            authCheck::class,
+            alreadyLoggedIn::class,
+            apiAuth::class,
+        );
+
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

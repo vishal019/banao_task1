@@ -6,7 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Auth\SessionGuard;
+use App\Models\task;
+use Auth;
+
+
+
 
 class userController extends Controller
 {
@@ -23,7 +27,20 @@ class userController extends Controller
     public function display_dashboard(Request $request){
 
 
-        return view('dashboard');
+       
+      
+
+        $login_id=$request->session()->get('loginId');
+        $data =User::where('id',$login_id)->get();
+
+        
+        $user_data=$data[0];
+        Auth::login($user_data);
+        $all_users_data=task::where('user_id',$login_id)->get();
+
+        
+
+        return view('dashboard',compact('user_data','all_users_data'));
 
     }
 
@@ -82,17 +99,24 @@ class userController extends Controller
         $password= $request->input('password');
       
         $path = $request->path();
+      
 
 
         
        if(!empty($data)){
+
         if( $email == $data->email && $password == password_verify( $password,$data->password))
         {
+            Auth::login($data);
+
             $name=$data->name;
             if( $path == 'validate_login'){
   
-                $request->session()->put('username',$email);
+                $request->session()->put('loginId',$data->id);
                 $request->session()->put('name',$name);
+            
+                
+
                 echo('code stuck here');
                 return redirect('dashboard')->with('message','login sucessfull');
             }

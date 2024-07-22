@@ -5,8 +5,9 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Auth;
 
-class customauthMiddleware
+class alreadyLoggedIn
 {
     /**
      * Handle an incoming request.
@@ -16,25 +17,10 @@ class customauthMiddleware
     public function handle(Request $request, Closure $next): Response
     {
 
-        $path =$request->path();
-        
-      
-        echo(session()->has('username'));
-
-        if(session()->has('username')){
-
-            echo('session is not present');
-
-
-            if($path == '/'){
-                
-  
-            return redirect('dashboard');
-  
-           
-         }
-       
+        // echo(Auth::user());
+        if(Session()->has('loginId') && (url('/') == $request->url() || url('user_register') == $request->url())){
+            return back();
+        }
+        return $next($request);
     }
-    return $next($request);
-}
 }

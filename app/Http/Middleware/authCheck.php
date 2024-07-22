@@ -5,9 +5,9 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Support\Facades\Auth;
+use Auth;
 
-class customMiddleware
+class authCheck
 {
     /**
      * Handle an incoming request.
@@ -16,15 +16,18 @@ class customMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        
 
-        $path =$request->path();
-    
-        
-      
-        
+        if(!Session()->has('loginId')){
+
+
+            // return redirect('user_register')->with('fail','You have to login first.');
+            // return back();
+            
+        }
 
        
-    return $next($request);
-}
-
+        return $next($request);
+    }
+   
 }
