@@ -142,8 +142,14 @@
                                             </form>
                                             <br>&nbsp;
                                             
-                                                <a href="#!" data-mdb-tooltip-init title="Remove"><i
-                                                   class="fas fa-trash-alt fa-lg text-warning"></i></a>
+                                              <form action="api/todo/delete" method="POST">
+                                                @csrf
+                                             <input type="hidden" name="task_id" value="{{$data->id}}">
+                                               <button type="submit" style="background-color: transparent;border:0ch"> <i class="fas fa-trash-alt fa-lg text-warning"></i></button>
+
+
+                                             </form>
+ 
                                              </td>
                                           </tr>
                                           @endforeach

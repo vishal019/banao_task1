@@ -30,18 +30,18 @@ class apiAuth
 
     
    
-        if ($api_key != "helloatg") {
+        if ($api_key == "helloatg") {
             
-            return response()->json([
-                'status' => 0,
-                'message' => 'Invalid API key',
-            ], 401);
-            
+           
+            return $next($request);
         }
       
 
+        return response()->json([
+            'status' => 0,
+            'message' => 'Invalid API key',
+        ], 401);
 
-
-        return $next($request);
+        
     }
 }

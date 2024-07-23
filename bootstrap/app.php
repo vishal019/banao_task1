@@ -24,6 +24,11 @@ return Application::configure(basePath: dirname(__DIR__))
             apiAuth::class,
         );
 
+        $middleware->validateCsrfTokens(except: [
+            'http://127.0.0.1:8000/api/todo/add',
+            'http://127.0.0.1:8000/api/todo/status',
+        ]);
+
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

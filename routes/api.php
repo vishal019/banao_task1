@@ -14,4 +14,5 @@ Route::get('/user', function (Request $request) {
 Route::middleware('web',apiAuth::class)->group(function () {
     Route::post('/todo/add', [TaskController::class, 'addTask']);
     Route::post('/todo/status', [TaskController::class, 'updateTaskStatus']);
+    Route::post('/todo/delete',[TaskController::class,'detele_task']);
 });

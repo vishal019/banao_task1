@@ -13,6 +13,8 @@ class TaskController extends Controller
 
       
 
+      
+
         $task = new task();
         $task->user_id = $request->user_id;
         $task->task = $request->task;
@@ -56,6 +58,19 @@ class TaskController extends Controller
             'status' => 1,
             'message' => $statusMessage,
         ]);
+    }
+
+
+    public function detele_task(Request $request){
+
+
+        $task = task::where('id',$request->task_id)->get();
+
+        $task[0]->delete();
+    
+
+        return back();
+
     }
 
 }
