@@ -4,11 +4,14 @@
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <meta name="_token" content="{{ csrf_token() }}">
       <!-- MDB -->
       <link
          href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.min.css"
          rel="stylesheet"
          />
+         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
       <!-- Font Awesome -->
       <link
          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
@@ -68,16 +71,17 @@
                                        <h2 class="my-4" style="color: black">Task List</h2>
                                     </div>
                                     <!-- Button trigger modal -->
-                                    <button style="margin-left: 90%;" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    {{-- <button style="margin-left: 90%;" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                     Add Task
-                                    </button>
+                                    </button> --}}
+                                    <button class="btn btn-primary mt-3" id="add-task-btn">Add task</button>
                                     <!-- Modal -->
                                     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                        <div class="modal-dialog">
                                           <div class="modal-content">
                                              <div class="modal-header">
                                                 <h1 class="modal-title fs-5" id="exampleModalLabel">Add Task</h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                <button type="button" id="add-task-btn" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                              </div>
                                              <div class="modal-body">
                                                <form action="{{url("api/todo/add")}}" method="POST">
@@ -103,59 +107,14 @@
                                           </div>
                                        </div>
                                     </div>
-                                    <table class="table text-white mb-0">
-                                       <thead>
-                                          <tr>
-                                             <th scope="col">Sr.No</th>
-                                             <th scope="col">Task</th>
-                                             <th scope="col">Priority</th>
-                                             <th scope="col">Actions</th>
-                                          </tr>
-                                       </thead>
-                                       <tbody>
-                                          @foreach ($all_users_data as $data )
+                                   
+                                    {{-- table body  --}}
 
-                                          <tr class="fw-normal">
-                                             <th>
-                                                <span class="ms-2">{{$data->id}}</span>
-                                             </th>
-                                             <td class="align-middle">
-                                                <span>{{$data->task}}</span>
-                                             </td>
-                                             <td class="align-middle">
-                                              @if($data->status == "pending")
-                                                <h6 class="mb-0"><span class="badge bg-danger">{{$data->status}}</span></h6>
-                                                @else
-                                                <h6 class="mb-0"><span class="badge bg-success">Done</span></h6>
-                                                @endif
-                                             </td>
-                                             <td class="align-middle">
+                                    <div id="task-list" class="mt-4"></div>
+
+                                    {{-- table body end  --}}
 
 
-                                              <form action="api/todo/status" method="POST">
-                                                   @csrf
-                                                <input type="hidden" name="task_id" value="{{$data->id}}">
-                                                <input type="hidden" name="status" value="done">
-                                             
-                                             <button style="background-color: transparent;border:0ch" type="submit">  <i class="fas fa-check fa-lg text-success me-3"></i></button>
-
-                                            </form>
-                                            <br>&nbsp;
-                                            
-                                              <form action="api/todo/delete" method="POST">
-                                                @csrf
-                                             <input type="hidden" name="task_id" value="{{$data->id}}">
-                                               <button type="submit" style="background-color: transparent;border:0ch"> <i class="fas fa-trash-alt fa-lg text-warning"></i></button>
-
-
-                                             </form>
- 
-                                             </td>
-                                          </tr>
-                                          @endforeach
-
-                                       </tbody>
-                                    </table>
                                  </div>
                               </div>
                            </div>
@@ -166,5 +125,112 @@
             </div>
          </div>
       </div>
+
+      <script>
+         $(document).ready(function() {
+             loadTasks();
+
+
+             $.ajaxSetup({ headers: { 'csrftoken' : '{{ csrf_token() }}' } });
+ 
+             // Load tasks for the logged-in user
+             function loadTasks() {
+                 $.ajax({
+                     url: 'api/todo/tasks',
+                     type: 'GET',
+                     success: function(data) {
+                         let tasks = data.tasks;
+                         let html = '<table class="table text-white mb-0">  <thead> <tr><th scope="col">Sr.No</th><th scope="col">Task</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>';
+                         tasks.forEach(task => {
+                             html += `
+                                      
+                                        <tr class="fw-normal">
+                                             <th>
+                                                <span class="ms-2">${task.id}</span>
+                                             </th>
+                                             <td class="align-middle">
+                                                <span>${task.task}</span>
+                                             </td>
+                                             <td class="align-middle">
+                                             
+                                                
+                                                <h6 class="mb-0"><span style="color:black;" class="badge">${task.status}</span></h6>
+                                              
+                                                
+                                               
+                                             </td>
+                                             <td class="align-middle">
+                                                
+                                             <button class="btn btn-sm btn-success mark-done-btn" data-id="${task.id}" style="float: right;">Done</button>
+                                             <button class="btn btn-sm btn-warning mark-pending-btn" data-id="${task.id}" style="float: right; margin-right: 10px;">Pending</button>
+                                             </td>
+                                          </tr>
+
+                                 </tbody>
+                                    
+                                 
+                             `;
+                         });
+                         html += '</table>';
+                         $('#task-list').html(html);
+                     }
+                 });
+             }
+ 
+             // Mark task as done
+             $(document).on('click', '.mark-done-btn', function() {
+                 let taskId = $(this).data('id');
+                 $.ajax({
+                     url: `/api/todo/tasks/${taskId}/mark_done`,
+                     type: 'POST',
+                     data:{
+                        _token: '{{ csrf_token() }}'
+                     },
+                     success: function() {
+                         loadTasks();
+                     }
+                 });
+             });
+ 
+             // Mark task as pending
+             $(document).on('click', '.mark-pending-btn', function() {
+                 let taskId = $(this).data('id');
+                 $.ajax({
+                     url: `/api/todo/tasks/${taskId}/mark_pending`,
+                     type: 'POST',
+                     data:{
+                        _token: '{{ csrf_token() }}'
+                     },
+                     success: function() {
+                         loadTasks();
+                     }
+                 });
+             });
+
+             
+ 
+             // Add new task
+             $('#add-task-btn').click(function() {
+                 let taskTitle = prompt('Enter task title:');
+                 if (taskTitle) {
+                     $.ajax({
+                         url: '/api/todo/tasks',
+                         type: 'POST',
+                         data: {
+                             title: taskTitle,
+                             _token: '{{ csrf_token() }}'
+                         },
+                         success: function() {
+                           
+                             loadTasks();
+                         }
+                     });
+                 }
+             });
+         });
+     </script>
+
+
+
    </body>
 </html>

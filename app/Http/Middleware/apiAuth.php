@@ -23,25 +23,26 @@ class apiAuth
    
 
    
-      $api_key=Auth::user()->api_token;
+    //   $api_key=Auth::user()->api_token;
 
 
      
 
     
    
-        if ($api_key == "helloatg") {
+        // if ($api_key == "helloatg") {
             
            
-            return $next($request);
-        }
+        //     return $next($request);
+        // }
       
 
-        return response()->json([
-            'status' => 0,
-            'message' => 'Invalid API key',
-        ], 401);
+        // return response()->json([
+        //     'status' => 0,
+        //     'message' => 'Invalid API key',
+        // ], 401);
 
         
+        return $next($request);
     }
 }

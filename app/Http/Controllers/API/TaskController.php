@@ -5,19 +5,35 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\task;
+use Illuminate\Support\Facades\Auth;
+
 
 class TaskController extends Controller
 {
+
+
+
+
+    public function display_task(Request $request){
+
+        $login_id=$request->session()->get('loginId');
+        $tasks=task::where('user_id',$login_id)->get();
+
+         return response()->json(['tasks'=>$tasks]);
+      
+
+
+    }
     public function addTask(Request $request){
 
 
       
 
       
-
+        $login_id=$request->session()->get('loginId');
         $task = new task();
-        $task->user_id = $request->user_id;
-        $task->task = $request->task;
+        $task->user_id = $login_id;
+        $task->task = $request->title;
         $task->save();
 
         return response()->json([
@@ -27,8 +43,42 @@ class TaskController extends Controller
         ]);
 
 
+        // $task = new task([
+        //     'task' => $request->title,
+        //     'user_id' => Auth::id(),
+            
+        // ]);
+
+        // $task->save();
+
+        // return response()->json(['message' => 'Task created successfully']);
+
 
     }
+
+
+    public function markDone(task $task){
+
+        
+        $task->status = 'done';
+        $task->save();
+        return response()->json(['message' => 'Task marked as done']);
+       
+
+    }
+
+
+    public function markPending(task $task){
+
+         
+        $task->status = 'pending';
+        $task->save();
+        return response()->json(['message' => 'Task marked as pending']);
+       
+       
+
+    }
+    
 
 
     public function updateTaskStatus(Request $request)

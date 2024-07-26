@@ -27,6 +27,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'http://127.0.0.1:8000/api/todo/add',
             'http://127.0.0.1:8000/api/todo/status',
+            'http://127.0.0.1:8000/api/todo/tasks',
+            'http://127.0.0.1:8000/api/todo/tasks/{task}/mark_done',
+            'http://127.0.0.1:8000/api/todo/tasks/{task}/mark_pending'
+
         ]);
 
     })
